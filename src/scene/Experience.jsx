@@ -140,7 +140,7 @@ export default function Experience() {
       camera={{ fov: 55, near: 0.1, far: 80, position: [0, 0, 6] }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor(BG)
-        scene.fog = new THREE.Fog(BG, 9, 46)
+        scene.fog = new THREE.Fog(BG, 8, 30)
       }}
     >
       <ambientLight intensity={0.9} />
