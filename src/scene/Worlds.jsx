@@ -203,7 +203,8 @@ function CaseRow({ index, title, onClick }) {
       onPointerOver={() => { setHover(true); document.body.style.cursor = 'pointer' }}
       onPointerOut={() => { setHover(false); document.body.style.cursor = '' }}
     >
-      <mesh position={[0.6, 0, -0.01]} visible={false}><planeGeometry args={[7.5, 0.75]} /><meshBasicMaterial /></mesh>
+      {/* invisible-looking but raycastable hit surface (visible=false is skipped by the raycaster) */}
+      <mesh position={[0.6, 0, -0.01]}><planeGeometry args={[7.5, 0.75]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} /></mesh>
       <Text3D variant="display" size={0.42} fillOpacity={0} strokeColor={INK} strokeWidth={'2.5%'} opacity={hover ? 1 : 0.75} anchorX="right" position={[-2.2, 0, 0]}>{`${index + 1}.`}</Text3D>
       <Text3D variant="light" size={0.34} opacity={hover ? 1 : 0.8} anchorX="left" position={[-1.7, 0, 0]}>{title}</Text3D>
     </group>
@@ -243,8 +244,8 @@ function TalkCard({ item, index, onClick }) {
         <edgesGeometry args={[new THREE.PlaneGeometry(2.4, 1.35)]} />
         <lineBasicMaterial color={INK} transparent opacity={hover ? 0.8 : 0.3} fog />
       </lineSegments>
-      <Text3D variant="light" size={0.17} anchorX="left" anchorY="top" maxWidth={2.4} position={[-1.2, -0.82, 0]}>{item.title}</Text3D>
-      <Text3D size={0.1} opacity={0.5} anchorX="left" anchorY="top" position={[-1.2, -1.28, 0]}>{`${item.tags.join(' · ')} — ${item.meta} · WATCH ▸`}</Text3D>
+      <Text3D variant="light" size={0.14} align="left" anchorX="left" anchorY="top" maxWidth={2.4} lineHeight={1.25} position={[-1.2, -0.8, 0]}>{item.title}</Text3D>
+      <Text3D size={0.085} opacity={0.5} align="left" anchorX="left" anchorY="top" maxWidth={2.4} position={[-1.2, -1.2, 0]}>{`${item.tags.join(' · ')} — ${item.meta} · WATCH ▸`}</Text3D>
     </group>
   )
 }
@@ -256,7 +257,7 @@ function Talks() {
       <group position={[0, 0.1, -5.5]}>
         {TALKS.items.map((tk, i) => (
           <Bob key={tk.title} amp={0.05} phase={i * 1.3} freq={0.35}>
-            <group position={[(i % 2 ? 1.4 : -1.4) * (1 + (i % 3) * 0.25), (i % 3 - 1) * 0.55, -i * 2.6]}>
+            <group position={[i % 2 ? 2.3 : -2.3, ((i * 7) % 3 - 1) * 0.45, -i * 3]}>
               <TalkCard item={tk} index={i} onClick={() => openModal({ type: 'talk', index: i })} />
             </group>
           </Bob>
