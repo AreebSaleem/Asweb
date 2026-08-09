@@ -4,10 +4,11 @@ import { extend } from '@react-three/fiber'
 import unboundedBlack from '@fontsource/unbounded/files/unbounded-latin-900-normal.woff?url'
 import unboundedBold from '@fontsource/unbounded/files/unbounded-latin-700-normal.woff?url'
 import grotesk from '@fontsource/space-grotesk/files/space-grotesk-latin-400-normal.woff?url'
+import groteskLight from '@fontsource/space-grotesk/files/space-grotesk-latin-300-normal.woff?url'
 
 extend({ TroikaText: Text })
 
-export const FONTS = { display: unboundedBlack, displayBold: unboundedBold, body: grotesk }
+export const FONTS = { display: unboundedBlack, displayBold: unboundedBold, body: grotesk, light: groteskLight }
 
 // Thin wrapper over troika-three-text: display for headlines, body for prose.
 export default function Text3D({
@@ -30,7 +31,7 @@ export default function Text3D({
     <troikaText
       ref={ref}
       text={children}
-      font={variant === 'body' ? FONTS.body : variant === 'bold' ? FONTS.displayBold : FONTS.display}
+      font={FONTS[variant === 'display' ? 'display' : variant === 'bold' ? 'displayBold' : variant === 'light' ? 'light' : 'body']}
       fontSize={size}
       color={color}
       maxWidth={maxWidth}

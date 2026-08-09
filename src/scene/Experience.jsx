@@ -50,11 +50,11 @@ function CameraRig() {
     ahead.y += pointer.y * 0.5
     camera.lookAt(ahead)
 
-    // banking: roll into turns proportional to lateral curvature
+    // gentle banking only while actually turning; level at stations
     curve.getTangentAt(Math.max(t - 0.005, 0), t0)
     curve.getTangentAt(Math.min(t + 0.005, 1), t1)
-    const bank = THREE.MathUtils.clamp((t1.x - t0.x) * -6, -0.35, 0.35)
-    camera.rotation.z += bank
+    const bank = THREE.MathUtils.clamp((t1.x - t0.x) * -2.2, -0.12, 0.12)
+    camera.rotation.z += bank * Math.min(1, Math.abs(scroll.target - scroll.current) * 40)
 
     setSectionFromProgress(t)
     emitProgress(t)
@@ -62,26 +62,55 @@ function CameraRig() {
   return null
 }
 
+// soft round sprite for stars/bokeh, drawn once on a canvas
+function glowTexture(stops) {
+  const c = document.createElement('canvas')
+  c.width = c.height = 64
+  const ctx = c.getContext('2d')
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+  stops.forEach(([o, col]) => g.addColorStop(o, col))
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, 64, 64)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+function starGeo(n, spread, zRange) {
+  const pos = new Float32Array(n * 3)
+  for (let i = 0; i < n; i++) {
+    pos[i * 3 + 0] = THREE.MathUtils.randFloatSpread(spread[0])
+    pos[i * 3 + 1] = THREE.MathUtils.randFloatSpread(spread[1])
+    pos[i * 3 + 2] = THREE.MathUtils.randFloat(zRange[0], zRange[1])
+  }
+  const g = new THREE.BufferGeometry()
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+  return g
+}
+
 function Stars() {
-  const geo = useMemo(() => {
-    const n = 2600
-    const pos = new Float32Array(n * 3)
-    for (let i = 0; i < n; i++) {
-      pos[i * 3 + 0] = THREE.MathUtils.randFloatSpread(140)
-      pos[i * 3 + 1] = THREE.MathUtils.randFloatSpread(90)
-      pos[i * 3 + 2] = THREE.MathUtils.randFloat(20, -170)
+  const { small, big } = useMemo(() => {
+    const dot = glowTexture([[0, 'rgba(255,253,250,1)'], [0.4, 'rgba(255,253,250,0.6)'], [1, 'rgba(255,253,250,0)']])
+    return {
+      small: {
+        geo: starGeo(2600, [140, 90], [20, -170]),
+        mat: new THREE.PointsMaterial({ color: '#f4f2f0', size: 0.11, map: dot, alphaMap: dot, sizeAttenuation: true, transparent: true, opacity: 0.8, depthWrite: false }),
+      },
+      // sparse large bokeh glows drifting far and near
+      big: {
+        geo: starGeo(70, [120, 70], [15, -165]),
+        mat: new THREE.PointsMaterial({ color: '#f4f2f0', size: 1.6, map: dot, alphaMap: dot, sizeAttenuation: true, transparent: true, opacity: 0.35, depthWrite: false }),
+      },
     }
-    const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-    return g
   }, [])
-  const mat = useMemo(
-    () => new THREE.PointsMaterial({ color: '#f4f2f0', size: 0.07, sizeAttenuation: true, transparent: true, opacity: 0.75, depthWrite: false }),
-    [],
-  )
   const ref = useRef()
   useFrame((_, dt) => { if (ref.current) ref.current.rotation.z += dt * 0.004 })
-  return <points ref={ref} geometry={geo} material={mat} />
+  return (
+    <group ref={ref}>
+      <points geometry={small.geo} material={small.mat} />
+      <points geometry={big.geo} material={big.mat} />
+    </group>
+  )
 }
 
 // dashed guide line along the whole flight path

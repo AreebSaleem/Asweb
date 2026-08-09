@@ -47,7 +47,8 @@ export function Hud() {
   useEffect(() => onSection(setActive), [])
   useEffect(() =>
     onProgress((p) => {
-      if (fillRef.current) fillRef.current.style.transform = `scaleX(${p})`
+      // thumb is 18% of the track; sweep it across the remaining 82%
+      if (fillRef.current) fillRef.current.style.transform = `translateY(${p * (82 / 18) * 100}%)`
       if (p > 0.01) setHinted(true)
     }), [])
 
