@@ -39,7 +39,9 @@ function CameraRig() {
     const t = THREE.MathUtils.clamp(scroll.current, 0, 1)
 
     curve.getPointAt(t, pos)
-    curve.getPointAt(Math.min(t + 0.012, 1), ahead)
+    // look target = fixed distance along the tangent; stable at both curve ends
+    curve.getTangentAt(Math.min(t, 0.999), t0)
+    ahead.copy(pos).addScaledVector(t0, 2)
 
     // idle breathing + pointer parallax
     const time = state.clock.elapsedTime
