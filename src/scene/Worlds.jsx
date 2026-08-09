@@ -15,7 +15,7 @@ function Station({ index, children }) {
     const p = new THREE.Vector3(...STATIONS[index])
     const t = index / (STATIONS.length - 1)
     const tan = curve.getTangentAt(Math.max(0.001, Math.min(0.999, t)))
-    return { position: p, rotationY: Math.atan2(-tan.x, -tan.z) + Math.PI }
+    return { position: p, rotationY: Math.atan2(-tan.x, -tan.z) }
   }, [index])
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
