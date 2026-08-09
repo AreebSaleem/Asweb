@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#121010"/>
+  <g fill="none" stroke="#f4f2f0" stroke-opacity="0.35" stroke-width="1">
+    <circle cx="220" cy="180" r="84"/>
+    <circle cx="220" cy="180" r="46"/>
+    <path d="M0 260 L640 230"/>
+    <path d="M0 150 L640 260"/>
+    <rect x="340" y="90" width="120" height="120" transform="rotate(30 460 120)"/>
+  </g>
+  <text x="32" y="320" font-family="monospace" font-size="28" letter-spacing="8" fill="#f4f2f0" fill-opacity="0.8">RESEARCH</text>
+  <text x="32" y="48" font-family="monospace" font-size="14" letter-spacing="4" fill="#f4f2f0" fill-opacity="0.4">ASWEB / TALK 02</text>
+</svg>
