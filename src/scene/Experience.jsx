@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { STATIONS, PAGES } from '../data'
-import { scroll, setSectionFromProgress, emitProgress, loader } from '../store'
+import { scroll, setSectionFromProgress, emitProgress, loader, stationT } from '../store'
 import Worlds from './Worlds'
 
 const BG = '#121010'
@@ -13,6 +13,17 @@ export const curve = new THREE.CatmullRomCurve3(
   'catmullrom',
   0.5,
 )
+
+// Publish each station's true arc-length fraction (the curve passes through
+// control point i at u = i/(N-1); convert that to arc-length space).
+{
+  const K = 400
+  const lens = curve.getLengths(K)
+  const total = lens[K]
+  STATIONS.forEach((_, i) => {
+    stationT[i] = lens[Math.round((i / (STATIONS.length - 1)) * K)] / total
+  })
+}
 
 function CameraRig() {
   const { camera, pointer } = useThree()

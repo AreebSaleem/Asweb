@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { SECTIONS, TALKS, CASES, PAGES } from '../data'
-import { scroll, onSection, onProgress, loader } from '../store'
+import { scroll, onSection, onProgress, loader, stationT } from '../store'
 import { onModal, closeModal } from '../store-modal'
 
 // ---- Loader ---------------------------------------------------------------
@@ -31,8 +31,11 @@ export function Loader() {
 
 // ---- HUD ------------------------------------------------------------------
 function jumpTo(index) {
-  scroll.target = index / (SECTIONS.length - 1)
+  scroll.target = stationT[index]
   scroll.moved = true
+  // keep the hidden scroller in sync so the next wheel tick continues from here
+  const el = document.querySelector('.scroller')
+  if (el) el.scrollTop = stationT[index] * (el.scrollHeight - el.clientHeight)
 }
 
 export function Hud() {

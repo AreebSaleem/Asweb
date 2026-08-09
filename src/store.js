@@ -11,10 +11,17 @@ export const scroll = {
 const listeners = new Set()
 export const onSection = (fn) => (listeners.add(fn), () => listeners.delete(fn))
 
+// True arc-length fraction of each station along the flight curve.
+// Filled in by Experience.jsx once the curve exists; linear fallback until then.
+export const stationT = SECTIONS.map((_, i) => i / (SECTIONS.length - 1))
+
 let activeSection = 0
 export const getActiveSection = () => activeSection
 export const setSectionFromProgress = (p) => {
-  const next = Math.min(SECTIONS.length - 1, Math.round(p * (SECTIONS.length - 1)))
+  let next = 0
+  for (let i = 1; i < stationT.length; i++) {
+    if (Math.abs(stationT[i] - p) < Math.abs(stationT[next] - p)) next = i
+  }
   if (next !== activeSection) {
     activeSection = next
     listeners.forEach((fn) => fn(next))
